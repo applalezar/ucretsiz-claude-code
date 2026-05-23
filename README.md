@@ -2,7 +2,7 @@
 
 # 🤖 Free Claude Code
 
-Use Claude Code CLI, VS Code, JetBrains ACP, or chat bots through your own Anthropic-compatible proxy.
+Claude-code'u terminalde, VSCode uzantısında veya OpenClaw gibi Discord'da ücretsiz olarak kullanın (ses desteği mevcuttur).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Python 3.14](https://img.shields.io/badge/python-3.14-3776ab.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/)
@@ -12,7 +12,7 @@ Use Claude Code CLI, VS Code, JetBrains ACP, or chat bots through your own Anthr
 [![Code style: Ruff](https://img.shields.io/badge/code%20formatting-ruff-f5a623.svg?style=for-the-badge)](https://github.com/astral-sh/ruff)
 [![Logging: Loguru](https://img.shields.io/badge/logging-loguru-4ecdc4.svg?style=for-the-badge)](https://github.com/Delgan/loguru)
 
-Free Claude Code routes Anthropic Messages API traffic from Claude Code to any provider. It keeps Claude Code's client-side protocol stable while letting you choose free, paid, or local models.
+Ücretsiz Claude Code, Anthropic Messages API trafiğini Claude Code'dan herhangi bir sağlayıcıya yönlendirir. Claude Code'un istemci tarafı protokolünün istikrarlı kalmasını sağlarken, ücretsiz, ücretli veya yerel modeller arasından seçim yapmanıza olanak tanır.
 
 [Quick Start](#quick-start) · [Providers](#choose-a-provider) · [Clients](#connect-claude-code) · [Integrations](#optional-integrations) · [Development](#development)
 
@@ -34,23 +34,31 @@ Free Claude Code routes Anthropic Messages API traffic from Claude Code to any p
   </a>
 </div>
 
-## What You Get
+## Neler Elde Edersiniz
 
-- Drop-in proxy for Claude Code's Anthropic API calls.
-- Eleven provider backends: NVIDIA NIM, Kimi, Wafer, OpenRouter, DeepSeek, LM Studio, llama.cpp, Ollama, OpenCode Zen, OpenCode Go, and Z.ai.
-- Per-model routing: send Opus, Sonnet, Haiku, and fallback traffic to different providers.
-- Native Claude Code `/model` picker support through the proxy's `/v1/models` endpoint (Claude Code must opt in to Gateway model discovery; see [Model Picker](#model-picker)).
-- Streaming, tool use, reasoning/thinking block handling, and local request optimizations.
-- Optional Discord or Telegram bot wrapper for remote coding sessions.
-- Optional Usage through the VSCode extension.
-- Optional voice-note transcription through local Whisper or NVIDIA NIM.
-- Local **Admin UI** at `/admin` to edit supported proxy settings, validate changes, and check providers (loopback access only).
+- Claude Code'un Anthropic API çağrıları için hazır proxy.
 
-## Quick Start
+- On bir sağlayıcı arka ucu: NVIDIA NIM, Kimi, Wafer, OpenRouter, DeepSeek, LM Studio, llama.cpp, Ollama, OpenCode Zen, OpenCode Go ve Z.ai.
 
-### 1. Fast Install
+- Modele özel yönlendirme: Opus, Sonnet, Haiku ve yedek trafiği farklı sağlayıcılara yönlendirin.
 
-Install or update Claude Code, uv, Python 3.14.0, and Free Claude Code:
+- Proxy'nin `/v1/models` uç noktası aracılığıyla yerel Claude Code `/model` seçici desteği (Claude Code'un Gateway model keşfine katılması gerekir; bkz. [Model Seçici](#model-picker)).
+
+- Akış, araç kullanımı, mantık/düşünme bloğu işleme ve yerel istek optimizasyonları.
+
+- Uzaktan kodlama oturumları için isteğe bağlı Discord veya Telegram bot sarmalayıcısı.
+
+- VSCode uzantısı aracılığıyla isteğe bağlı kullanım.
+
+- Yerel Whisper veya NVIDIA NIM aracılığıyla isteğe bağlı sesli not transkripsiyonu.
+
+- Desteklenen proxy ayarlarını düzenlemek, değişiklikleri doğrulamak ve sağlayıcıları kontrol etmek için `/admin` adresindeki yerel **Yönetici Arayüzü** (yalnızca yerel ağ erişimi).
+
+## Hızlı Başlangıç
+
+### 1. Hızlı Kurulum
+
+Claude Code, uv, Python 3.14.0 ve Free Claude Code'u kurun veya güncelleyin:
 
 macOS/Linux:
 
@@ -72,27 +80,25 @@ Review the installers at [scripts/install.sh](https://github.com/Alishahryar1/fr
 fcc-server
 ```
 
-After startup, Uvicorn prints the proxy bind address and the app logs the admin URL:
+Uygulama başlatıldıktan sonra, Uvicorn proxy bağlantı adresini yazdırır ve uygulama yönetici URL'sini kaydeder:
 
 ```text
 INFO:     Admin UI: http://127.0.0.1:8082/admin (local-only)
 ```
+Birçok terminal bunları tıklanabilir hale getirir. `8082` değilse, yapılandırılmış `PORT` değerinizi kullanın.
 
-Many terminals make these clickable. Use your configured `PORT` if it is not `8082`.
+### 3. Yönetici Arayüzünü Açın ve NVIDIA NIM'i Yapılandırın
 
-### 3. Open The Admin UI And Configure NVIDIA NIM
+Terminal çıktısından **Yönetici Arayüzü** URL'sini açın.
 
-Open the **Admin UI** URL from the terminal output.
-
-Need an NVIDIA NIM API key? Use the **[NVIDIA NIM provider](#nvidia-nim-provider)** section below, then scroll back up here.
-
+Bir NVIDIA NIM API anahtarına mı ihtiyacınız var? Aşağıdaki **[NVIDIA NIM sağlayıcısı](#nvidia-nim-provider)** bölümünü kullanın, ardından buraya geri dönün.
 <div align="center">
   <img src="assets/admin-page.png" alt="Local admin UI for proxy settings" width="700">
 </div>
 
-Paste your NVIDIA NIM API key into `NVIDIA_NIM_API_KEY`, then click **Validate** and **Apply**.
+NVIDIA NIM API anahtarınızı `NVIDIA_NIM_API_KEY` alanına yapıştırın, ardından **Doğrula** ve **Uygula** düğmelerine tıklayın.
 
-The default model is already set to `nvidia_nim/nvidia/nemotron-3-super-120b-a12b`. You can change it later from the same Admin UI.
+Varsayılan model zaten `nvidia_nim/nvidia/nemotron-3-super-120b-a12b` olarak ayarlanmıştır. Bunu daha sonra aynı Yönetici Arayüzünden değiştirebilirsiniz.
 
 ### 4. Run Claude Code
 
@@ -100,12 +106,11 @@ The default model is already set to `nvidia_nim/nvidia/nemotron-3-super-120b-a12
 fcc-claude
 ```
 
-`fcc-claude` reads the current configured port and auth token each time it starts, sets the Claude Code environment variables (including a 190k-token `CLAUDE_CODE_AUTO_COMPACT_WINDOW` for auto-compaction), and then launches the real `claude` command.
+`fcc-claude`, her başlatıldığında mevcut yapılandırılmış portu ve kimlik doğrulama belirtecini okur, Claude Code ortam değişkenlerini (otomatik sıkıştırma için 190k belirteçli `CLAUDE_CODE_AUTO_COMPACT_WINDOW` dahil) ayarlar ve ardından gerçek `claude` komutunu başlatır.
 
-## Choose A Provider
+## Bir Sağlayıcı Seçin
 
-Pick one provider, enter its key or local URL in the Admin UI, and set `MODEL` to a provider-prefixed model slug. `MODEL` is the fallback. `MODEL_OPUS`, `MODEL_SONNET`, and `MODEL_HAIKU` can override routing for Claude Code's model tiers.
-
+Bir sağlayıcı seçin, anahtarını veya yerel URL'sini Yönetici Arayüzüne girin ve `MODEL`'i sağlayıcı önekli bir model slug'ına ayarlayın. `MODEL` yedek sağlayıcıdır. `MODEL_OPUS`, `MODEL_SONNET` ve `MODEL_HAIKU`, Claude Code'un model katmanları için yönlendirmeyi geçersiz kılabilir.
 <a id="nvidia-nim-provider"></a>
 
 ### 1. [NVIDIA NIM](https://build.nvidia.com/)
@@ -204,213 +209,240 @@ Popular examples:
 - `opencode/big-pickle` (free)
 - `opencode/glm-5.1`
 
-Browse available models at [opencode.ai](https://opencode.ai).
+[opencode.ai](https://opencode.ai) adresinde mevcut modelleri inceleyin.
 
 ### 10. [OpenCode Go](https://opencode.ai/)
 
-Get an API key at [opencode.ai/auth](https://opencode.ai/auth) (same as OpenCode Zen).
+[opencode.ai/auth](https://opencode.ai/auth) adresinden bir API anahtarı alın (OpenCode Zen ile aynı).
 
-In the Admin UI, use `OPENCODE_API_KEY`, then set `MODEL` to an OpenCode Go model slug such as `opencode_go/minimax-m2.7`.
+Yönetici arayüzünde, `OPENCODE_API_KEY` kullanın, ardından `MODEL`'i `opencode_go/minimax-m2.7` gibi bir OpenCode Go model slug'ına ayarlayın.
 
-OpenCode Go is a subscription gateway with its own curated catalog and OpenAI-compatible endpoint at `https://opencode.ai/zen/go/v1`. It shares the **same OpenCode API key** as Zen; only the slug prefix (`opencode_go/` vs `opencode/`) and upstream path differ.
+OpenCode Go, kendi derlenmiş kataloğuna ve `https://opencode.ai/zen/go/v1` adresinde OpenAI uyumlu uç noktasına sahip bir abonelik ağ geçididir. Zen ile **aynı OpenCode API anahtarını** paylaşır; yalnızca slug öneki (`opencode_go/` yerine `opencode/`) ve yukarı akış yolu farklıdır.
 
-Popular examples:
+Popüler örnekler:
 
 - `opencode_go/minimax-m2.7`
 
-Browse available models at [opencode.ai](https://opencode.ai).
+Mevcut modelleri [opencode.ai](https://opencode.ai) adresinden inceleyin.
 
 ### 11. [Z.ai](https://z.ai/)
 
-Get an API key at [Z.ai/manage-apikey/apikey-list](https://z.ai/manage-apikey/apikey-list).
+[Z.ai/manage-apikey/apikey-list](https://z.ai/manage-apikey/apikey-list) adresinden bir API anahtarı alın.
 
-In the Admin UI, paste it into `ZAI_API_KEY`, then set `MODEL` to a Z.ai model slug such as `zai/glm-5.1`.
+Yönetici arayüzünde, anahtarı `ZAI_API_KEY` alanına yapıştırın, ardından `MODEL` alanını `zai/glm-5.1` gibi bir Z.ai model slug'ına ayarlayın.
 
-Z.ai provides GLM models through the OpenAI-compatible Coding Plan endpoint at `https://api.z.ai/api/coding/paas/v4`.
+Z.ai, GLM modellerini OpenAI uyumlu Kodlama Planı uç noktası aracılığıyla `https://api.z.ai/api/coding/paas/v4` adresinden sağlar.
 
-Popular examples:
+Popüler örnekler:
 
 - `zai/glm-5.1`
 - `zai/glm-5-turbo`
 
-Browse models at [Z.ai](https://z.ai).
+Modelleri [Z.ai](https://z.ai) adresinden inceleyebilirsiniz.
 
-### 12. Mix Providers By Model Tier
+### 12. Model Katmanına Göre Sağlayıcıları Karıştırma
 
-Each model tier can use a different provider by setting `MODEL_OPUS`, `MODEL_SONNET`, and `MODEL_HAIKU` in the Admin UI. Leave a tier blank to inherit `MODEL`.
+Her model katmanı, Yönetici Arayüzünde `MODEL_OPUS`, `MODEL_SONNET` ve `MODEL_HAIKU` ayarlarını yaparak farklı bir sağlayıcı kullanabilir. Bir katmanı boş bırakarak `MODEL` sağlayıcısını devralabilirsiniz.
 
-For example, you can route Opus to `nvidia_nim/moonshotai/kimi-k2.5`, Sonnet to `open_router/deepseek/deepseek-r1-0528:free`, Haiku to `lmstudio/unsloth/GLM-4.7-Flash-GGUF`, and keep the fallback `MODEL` on `zai/glm-5.1`.
+Örneğin, Opus'u `nvidia_nim/moonshotai/kimi-k2.5`'e, Sonnet'i `open_router/deepseek/deepseek-r1-0528:free`'ye, Haiku'yu `lmstudio/unsloth/GLM-4.7-Flash-GGUF`'e yönlendirebilir ve yedek `MODEL` sunucusunu `zai/glm-5.1`'de tutabilirsiniz.
 
-## Connect Claude Code
+## Claude Code'a Bağlanma
 
 ### 1. Claude Code CLI
 
-For terminal use, prefer the installed launcher:
+Terminal kullanımı için, kurulu başlatıcıyı tercih edin:
 
 ```bash
 fcc-claude
 ```
 
-Keep `fcc-server` running while you work. The Admin UI manages proxy config, restarts the server when runtime settings change, and `fcc-claude` reads the current Admin UI-managed port and auth token every time it starts. It also sets `CLAUDE_CODE_AUTO_COMPACT_WINDOW` to `190000` for auto-compaction.
+Çalışırken `fcc-server`'ı çalışır durumda tutun. Yönetici Arayüzü proxy yapılandırmasını yönetir, çalışma zamanı ayarları değiştiğinde sunucuyu yeniden başlatır ve `fcc-claude`, her başlatıldığında mevcut Yönetici Arayüzü tarafından yönetilen portu ve kimlik doğrulama belirtecini okur. Ayrıca otomatik sıkıştırma için `CLAUDE_CODE_AUTO_COMPACT_WINDOW` değerini `190000` olarak ayarlar.
 
-### 2. VS Code Extension
+### 2. VS Code Eklentisi
 
-Open Settings, search for `claude-code.environmentVariables`, choose **Edit in settings.json**, and add:
+Ayarları açın, `claude-code.environmentVariables` ifadesini arayın, **settings.json dosyasında düzenle** seçeneğini seçin ve aşağıdakileri ekleyin:
 
 ```json
 "claudeCode.environmentVariables": [
-  { "name": "ANTHROPIC_BASE_URL", "value": "http://localhost:8082" },
-  { "name": "ANTHROPIC_AUTH_TOKEN", "value": "freecc" },
-  { "name": "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY", "value": "1" },
-  { "name": "CLAUDE_CODE_AUTO_COMPACT_WINDOW", "value": "190000" }
+{ "name": "ANTHROPIC_BASE_URL", "value": "http://localhost:8082" },
+
+{ "name": "ANTHROPIC_AUTH_TOKEN", "value": "freecc" },
+
+{ "name": "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY", "value": "1" },
+
+{ "name": "CLAUDE_CODE_AUTO_COMPACT_WINDOW", "value": "190000" }
 ]
 ```
 
-Reload the extension. If the extension shows a login screen, choose the Anthropic Console path once; the local proxy still handles model traffic after the environment variables are active.
+Eklentiyi yeniden yükleyin. Eğer eklenti bir giriş ekranı gösteriyorsa, Anthropic Console yolunu bir kez seçin; ortam değişkenleri etkinleştirildikten sonra bile yerel proxy model trafiğini yönetmeye devam eder.
 
 ### 3. JetBrains ACP
 
-Edit the installed Claude ACP config:
+Kurulu Claude ACP yapılandırmasını düzenleyin:
 
 - Windows: `C:\Users\%USERNAME%\AppData\Roaming\JetBrains\acp-agents\installed.json`
 - Linux/macOS: `~/.jetbrains/acp.json`
 
-Set the environment for `acp.registry.claude-acp`:
+`acp.registry.claude-acp` için ortam değişkenlerini ayarlayın:
 
 ```json
 "env": {
-  "ANTHROPIC_BASE_URL": "http://localhost:8082",
-  "ANTHROPIC_AUTH_TOKEN": "freecc",
-  "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY": "1",
-  "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "190000"
+
+"ANTHROPIC_BASE_URL": "http://localhost:8082",
+
+"ANTHROPIC_AUTH_TOKEN": "freecc",
+
+"CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY": "1",
+
+"CLAUDE_CODE_AUTO_COMPACT_WINDOW": "190000"
 }
 ```
 
-Restart the IDE after changing the file.
+Dosyayı değiştirdikten sonra IDE'yi yeniden başlatın.
 
-### 4. Model Picker
+### 4. Model Seçici
 
 <div align="center">
-  <img src="assets/cc-model-picker.png" alt="Claude Code model picker showing gateway models" width="700">
+
+<img src="assets/cc-model-picker.png" alt="Claude Code model seçici, ağ geçidi modellerini gösteriyor" width="700">
 </div>
 
-## Optional Integrations
+## İsteğe Bağlı Entegrasyonlar
 
-For every integration below, change **managed proxy settings** only in the **Admin UI** at `/admin`: edit fields, click **Validate**, then **Apply**. The footer shows where the managed config is stored; this README does not walk through editing that file by hand.
+Aşağıdaki her entegrasyon için, **yönetilen proxy ayarlarını** yalnızca `/admin` adresindeki **Yönetici Arayüzünde** değiştirin: alanları düzenleyin, **Doğrula**'ya tıklayın, ardından **Uygula**'ya tıklayın. Altbilgi, yönetilen yapılandırmanın nerede saklandığını gösterir; bu README, bu dosyayı elle düzenlemeyi adım adım anlatmaz.
 
-### 1. Discord And Telegram Bots
+### 1. Discord ve Telegram Botları
 
-The bot wrapper runs Claude Code sessions remotely, streams progress, supports reply-based conversation branches, and can stop or clear tasks.
+Bot sarmalayıcı, Claude Code oturumlarını uzaktan çalıştırır, ilerlemeyi yayınlar, yanıt tabanlı konuşma dallarını destekler ve görevleri durdurabilir veya temizleyebilir.
 
 **Discord**
 
-1. Create the bot in the [Discord Developer Portal](https://discord.com/developers/applications).
-2. Enable **Message Content Intent**.
-3. Invite the bot with read, send, and message history permissions.
-4. Copy the bot token and the numeric channel ID (or IDs) where the bot should respond.
+1. Botu [Discord Geliştirici Portalı](https://discord.com/developers/applications) üzerinden oluşturun.
+
+2. **Mesaj İçerik Amacı**'nı etkinleştirin.
+
+3. Botu okuma, gönderme ve mesaj geçmişi izinleriyle davet edin.
+
+4. Botun yanıt vermesi gereken kanal kimliğini (veya kimliklerini) ve bot token'ını kopyalayın.
 
 **Telegram**
 
-1. Create a bot with [@BotFather](https://t.me/BotFather) and copy the bot token.
-2. Get your numeric user ID from [@userinfobot](https://t.me/userinfobot) so only you can use the bot.
+1. [@BotFather](https://t.me/BotFather) ile bir bot oluşturun ve bot token'ını kopyalayın.
 
-**Configure in the Admin UI**
+2. Sadece sizin botu kullanabilmeniz için [@userinfobot](https://t.me/userinfobot) adresinden sayısal kullanıcı kimliğinizi alın.
 
-1. With `fcc-server` running, open the **Admin UI** URL from the terminal output.
-2. In the sidebar, choose **Messaging**.
-3. Set **Messaging Platform** to **discord** or **telegram**.
-4. For Discord, paste **Discord Bot Token** and **Allowed Discord Channels**. For Telegram, paste **Telegram Bot Token** and **Allowed Telegram User ID**.
-5. Set **Allowed Directory** to an absolute path on the machine running the proxy—the workspace root the bot may use.
-6. Click **Validate**, then **Apply**. Restart the server if the UI says one is required.
+**Yönetici Arayüzünde Yapılandırma**
+
+1. `fcc-server` çalışırken, terminal çıktısından **Yönetici Arayüzü** URL'sini açın.
+
+2. Yan çubukta **Mesajlaşma**'yı seçin.
+
+3. **Mesajlaşma Platformu**'nu **Discord** veya **Telegram** olarak ayarlayın.
+
+4. Discord için **Discord Bot Token** ve **İzin Verilen Discord Kanalları**'nı yapıştırın. Telegram için **Telegram Bot Token** ve **İzin Verilen Telegram Kullanıcı Kimliği**'ni yapıştırın.
+
+5. **İzin Verilen Dizin**'i, proxy'yi çalıştıran makinedeki mutlak bir yola (botun kullanabileceği çalışma alanı kökü) ayarlayın.
+
+6. **Doğrula**'ya, ardından **Uygula**'ya tıklayın. Kullanıcı arayüzü yeniden başlatmanın gerekli olduğunu söylüyorsa sunucuyu yeniden başlatın.
 
 <div align="center">
-  <img src="assets/admin-messaging.png" alt="Admin UI Messaging view with bot and voice settings" width="700">
+
+<img src="assets/admin-messaging.png" alt="Bot ve ses ayarlarıyla Yönetici Arayüzü Mesajlaşma görünümü" width="700">
 </div>
 
-<p align="center"><em>Admin UI → Messaging (platform, bots, and Voice)</em></p>
+<p align="center"><em>Yönetici Arayüzü
+→ Mesajlaşma (platform, botlar ve Ses)</em></p>
 
-**Useful commands**
+**Faydalı komutlar**
 
-- `/stop` cancels a task; reply to a task message to stop only that branch.
-- `/clear` resets sessions; reply to clear one branch.
-- `/stats` shows session state.
+- `/stop` bir görevi iptal eder; yalnızca o dalı durdurmak için bir görev mesajına yanıt verin.
 
-### 2. Voice Notes
+- `/clear` oturumları sıfırlar; bir dalı temizlemek için yanıt verin.
 
-Voice notes work on Discord and Telegram after you extend your [Free Claude Code install](#1-fast-install) with the matching optional extras.
+- `/stats` oturum durumunu gösterir.
+
+### 2. Sesli Notlar
+
+Sesli notlar, [Free Claude Code kurulumunuzu](#1-fast-install) ilgili isteğe bağlı eklerle genişlettikten sonra Discord ve Telegram'da çalışır.
 
 macOS/Linux:
 
 ```bash
-# NVIDIA NIM transcription (Riva gRPC)
+# NVIDIA NIM transkripsiyonu (Riva gRPC)
 curl -fsSL "https://github.com/Alishahryar1/free-claude-code/blob/main/scripts/install.sh?raw=1" | sh -s -- --voice-nim
 
-# Local Whisper (CPU or CUDA)
+# Yerel Whisper (CPU veya CUDA)
 curl -fsSL "https://github.com/Alishahryar1/free-claude-code/blob/main/scripts/install.sh?raw=1" | sh -s -- --voice-local
 
-# Both backends
+# Her iki arka uç
 curl -fsSL "https://github.com/Alishahryar1/free-claude-code/blob/main/scripts/install.sh?raw=1" | sh -s -- --voice-all
 
-# Local Whisper with CUDA
+# CUDA ile Yerel Whisper
 curl -fsSL "https://github.com/Alishahryar1/free-claude-code/blob/main/scripts/install.sh?raw=1" | sh -s -- --voice-local --torch-backend cu130
 ```
 
 Windows PowerShell:
 
 ```powershell
-# NVIDIA NIM transcription (Riva gRPC)
+# NVIDIA NIM transkripsiyonu (Riva gRPC)
 & ([scriptblock]::Create((irm "https://github.com/Alishahryar1/free-claude-code/blob/main/scripts/install.ps1?raw=1"))) -VoiceNim
 
-# Local Whisper (CPU or CUDA)
+# Yerel Whisper (CPU veya CUDA)
 & ([scriptblock]::Create((irm "https://github.com/Alishahryar1/free-claude-code/blob/main/scripts/install.ps1?raw=1"))) -VoiceLocal
 
-# Both backends
+# Her iki arka uç
 & ([scriptblock]::Create((irm "https://github.com/Alishahryar1/free-claude-code/blob/main/scripts/install.ps1?raw=1"))) -VoiceAll
 
-# Local Whisper with CUDA
+# CUDA ile Yerel Fısıltı
 & ([scriptblock]::Create((irm "https://github.com/Alishahryar1/free-claude-code/blob/main/scripts/install.ps1?raw=1"))) -VoiceLocal -TorchBackend cu130
 ```
 
-Restart `fcc-server` after reinstalling.
+Yeniden yükledikten sonra `fcc-server`'ı yeniden başlatın.
 
-In the **Admin UI**, open **Messaging** and scroll to **Voice**. Turn on **Voice Notes**, choose **Whisper Device** (`cpu`, `cuda`, or `nvidia_nim`), set **Whisper Model**, and enter **Hugging Face Token** when your setup needs it. For **nvidia_nim** transcription, install the `voice` extra and set **NVIDIA NIM API Key** on the **Providers** view. The screenshot above shows the **Voice** block in the same view.
+**Yönetici Arayüzünde**, **Mesajlaşma**'yı açın ve **Ses**'e kaydırın. **Sesli Notlar**'ı açın, **Fısıltı Aygıtı**'nı (`cpu`, `cuda` veya `nvidia_nim`) seçin, **Fısıltı Modeli**'ni ayarlayın ve kurulumunuz gerektirdiğinde **Sarılma Yüzü Belirteci**'ni girin. **nvidia_nim** transkripsiyonu için, `voice` eklentisini yükleyin ve **Sağlayıcılar** görünümünde **NVIDIA NIM API Anahtarı**'nı ayarlayın. Yukarıdaki ekran görüntüsü, aynı görünümde **Ses** bloğunu göstermektedir.
 
-## How It Works
+## Nasıl Çalışır
 
 <div align="center">
-  <img src="assets/how-it-works.svg" alt="Free Claude Code request flow architecture" width="900">
+
+<img src="assets/how-it-works.svg" alt="Free Claude Code istek akışı mimarisi" width="900">
 </div>
 
-Diagram source: [`assets/how-it-works.mmd`](assets/how-it-works.mmd).
+Diyagram kaynağı: [`assets/how-it-works.mmd`](assets/how-it-works.mmd).
 
-Important pieces:
+Önemli noktalar:
 
-- FastAPI exposes Anthropic-compatible routes such as `/v1/messages`, `/v1/messages/count_tokens`, and `/v1/models`.
-- Model routing resolves the Claude model name to `MODEL_OPUS`, `MODEL_SONNET`, `MODEL_HAIKU`, or `MODEL`.
-- NIM, OpenCode Zen, OpenCode Go, Z.ai use OpenAI chat streaming translated into Anthropic SSE.
-- Wafer, OpenRouter, DeepSeek, LM Studio, llama.cpp, and Ollama use Anthropic Messages style transports.
-- The proxy normalizes thinking blocks, tool calls, token usage metadata, and provider errors into the shape Claude Code expects.
-- Request optimizations answer trivial Claude Code probes locally to save latency and quota.
+- FastAPI, `/v1/messages`, `/v1/messages/count_tokens` ve `/v1/models` gibi Anthropic uyumlu rotaları sunar.
 
-## Development
+- Model yönlendirmesi, Claude model adını `MODEL_OPUS`, `MODEL_SONNET`, `MODEL_HAIKU` veya `MODEL` olarak çözümler.
 
-### 1. Project Structure
+- NIM, OpenCode Zen, OpenCode Go, Z.ai, OpenAI sohbet akışını Anthropic SSE'ye çevirerek kullanır.
+
+- Wafer, OpenRouter, DeepSeek, LM Studio, llama.cpp ve Ollama, Anthropic Mesajlar tarzı taşıma protokollerini kullanır.
+
+- Proxy, düşünme bloklarını, araç çağrılarını, token kullanım meta verilerini ve sağlayıcı hatalarını Claude Code'un beklediği şekle dönüştürür.
+
+- İstek optimizasyonları, gecikmeyi ve kotayı azaltmak için önemsiz Claude Code sorgularını yerel olarak yanıtlar.
+
+## Geliştirme
+
+### 1. Proje Yapısı
 
 ```text
 free-claude-code/
-├── server.py              # ASGI entry point
-├── api/                   # FastAPI routes, service layer, routing, optimizations
-├── core/                  # Shared Anthropic protocol helpers and SSE utilities
-├── providers/             # Provider transports, registry, rate limiting
-├── messaging/             # Discord/Telegram adapters, sessions, voice
-├── cli/                   # Package entry points and Claude process management
-├── config/                # Settings, provider catalog, logging
-└── tests/                 # Unit and contract tests
+├── server.py # ASGI giriş noktası
+├── api/ # FastAPI rotaları, servis katmanı, yönlendirme, optimizasyonlar
+├── core/ # Paylaşılan Antropik protokol yardımcıları ve SSE yardımcı programları
+├── providers/ # Sağlayıcı taşıma mekanizmaları, kayıt defteri, hız sınırlama
+├── messaging/ # Discord/Telegram adaptörleri, oturumlar, ses
+├── cli/ # Paket giriş noktaları ve Claude işlem yönetimi
+├── config/ # Ayarlar, sağlayıcı kataloğu, günlük kaydı
+└── tests/ # Birim ve sözleşme testleri
 ```
 
-### 2. Run From Source
+### 2. Kaynaktan Çalıştırma
 
-Use this path if you are developing or want to run directly from a checkout:
+Geliştirme yapıyorsanız veya doğrudan çalıştırmak istiyorsanız bu yolu kullanın. Çıkış:
 
 ```bash
 git clone https://github.com/Alishahryar1/free-claude-code.git
@@ -418,7 +450,7 @@ cd free-claude-code
 uv run uvicorn server:app --host 0.0.0.0 --port 8082
 ```
 
-### 3. Commands
+### 3. Komutlar
 
 ```bash
 uv run ruff format
@@ -427,34 +459,47 @@ uv run ty check
 uv run pytest
 ```
 
-Run them in that order before pushing. CI enforces the same checks.
+Push işleminden önce bu komutları bu sırayla çalıştırın. CI aynı kontrolleri uygular.
 
-### 4. Package Scripts
+### 4. Paket Komut Dosyaları
 
-`pyproject.toml` installs:
+`pyproject.toml` şunları kurar:
 
-- `fcc-server`: starts the proxy with configured host and port.
-- `fcc-init`: optional advanced scaffold for `~/.fcc/.env`; prefer the **Admin UI** for normal configuration.
-- `fcc-claude`: launches Claude Code with the configured local proxy URL, auth token, model discovery flag, and a 190k `CLAUDE_CODE_AUTO_COMPACT_WINDOW` for auto-compaction.
-- `free-claude-code`: compatibility alias for `fcc-server`.
+- `fcc-server`: yapılandırılmış ana bilgisayar ve port ile proxy'yi başlatır.
 
-### 5. Extending
+- `fcc-init`: `~/.fcc/.env` için isteğe bağlı gelişmiş iskelet; normal yapılandırma için **Yönetici Arayüzü**'nü tercih edin.
 
-- Add OpenAI-compatible providers by extending `OpenAIChatTransport`.
-- Add Anthropic Messages providers by extending `AnthropicMessagesTransport`.
-- Register provider metadata in `config.provider_catalog` and factory wiring in `providers.registry`.
-- Add messaging platforms by implementing the `MessagingPlatform` interface in `messaging/`.
+- `fcc-claude`: Yapılandırılmış yerel proxy URL'si, kimlik doğrulama belirteci, model keşif bayrağı ve otomatik sıkıştırma için 190k `CLAUDE_CODE_AUTO_COMPACT_WINDOW` ile Claude Code'u başlatır.
 
-## Contributing
+- `free-claude-code`: `fcc-server` için uyumluluk takma adı.
 
-- [`.env.example`](.env.example) lists env key names as a read-only reference for contributors; use the **Admin UI** to change managed proxy settings.
-- Report bugs and feature requests in [Issues](https://github.com/Alishahryar1/free-claude-code/issues).
-- Keep changes small and covered by focused tests.
-- Do not open Docker integration PRs.
-- Do not open README change PRs just open an issue for it.
-- Run the full check sequence before opening a pull request.
-- The syntax `except X, Y` is brought back in python 3.14 final version (not in 3.14 alpha). Keep in mind before opening PRs.
+### 5. Genişletme
 
-## License
+- `OpenAIChatTransport`'u genişleterek OpenAI uyumlu sağlayıcılar ekleyin.
 
-MIT License. See [LICENSE](LICENSE) for details.
+- `AnthropicMessagesTransport`'u genişleterek Anthropic Mesaj sağlayıcıları ekleyin.
+
+- Sağlayıcı meta verilerini `config.provider_catalog`'da ve fabrika bağlantılarını `providers.registry`'de kaydedin.
+
+- `messaging/`'da `MessagingPlatform` arayüzünü uygulayarak mesajlaşma platformları ekleyin.
+
+## Katkıda Bulunma
+
+- [`.env.example`](.env.exampl)
+  e) Katkıda bulunanlar için ortam anahtar adlarını salt okunur bir referans olarak listeler; yönetilen proxy ayarlarını değiştirmek için **Yönetici Arayüzünü** kullanın.
+
+- Hataları ve özellik isteklerini [Sorunlar](https://github.com/Alishahryar1/free-claude-code/issues) bölümünde bildirin.
+
+- Değişiklikleri küçük tutun ve odaklanmış testlerle kapsayın.
+
+- Docker entegrasyonu için PR açmayın.
+
+- README değişikliği için PR açmayın, bunun için bir sorun bildirin.
+
+- Bir çekme isteği açmadan önce tam kontrol dizisini çalıştırın.
+
+- `except X, Y` sözdizimi Python 3.14 final sürümünde geri getirildi (3.14 alfa sürümünde değil). PR açmadan önce bunu aklınızda bulundurun.
+
+## Lisans
+
+MIT Lisansı. Ayrıntılar için [LICENSE](LICENSE) bölümüne bakın.
